@@ -1,0 +1,14 @@
+{
+    "target_overrides": {
+        "*": {
+            "platform.stdio-baud-rate": 115200,
+            "platform.default-serial-baud-rate": 115200,
+            "platform.error-all-threads-info": true,
+            "platform.error-filename-capture-enabled": true,
+            "platform.fatal-error-auto-reboot-enabled": true,
+            "target.printf_lib": "std",
+            "rtos.main-thread-stack-size": 32768,
+            "rtos.thread-stack-size": 8192
+        }
+    }
+}

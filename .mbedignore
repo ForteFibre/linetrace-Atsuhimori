@@ -1,0 +1,6 @@
+connectivity/*
+storage/filesystem/*
+storage/kvstore/*
+storage/platform/*
+storage/*
+drivers/usb/*
