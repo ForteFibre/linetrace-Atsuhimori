@@ -39,7 +39,7 @@ void calibrationUpdate()
 
 bool calibrationFinished()
 {
-  if (calibrationTimer.elapsed_time() >= 7s) {
+  if (calibrationTimer.elapsed_time() >= 7000ms) {
     calibrationTimer.stop();
 
     return true;

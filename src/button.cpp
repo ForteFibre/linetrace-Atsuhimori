@@ -11,19 +11,35 @@ static bool prevSw2 = false;
 static bool sw1Pressed = false;
 static bool sw2Pressed = false;
 
+static Timer debounceTimer;
+
 void buttonUpdate()
 {
+  static bool initialized = false;
+
+  if (!initialized) {
+    debounceTimer.start();
+
+    initialized = true;
+  }
+
   bool currentSw1 = !sw1;
   bool currentSw2 = !sw2;
 
-  if (currentSw1 && !prevSw1) {
-    sw1Pressed = true;
-  }
+  sw1Pressed = false;
+  sw2Pressed = false;
 
-  if (currentSw2 && !prevSw2) {
-    sw2Pressed = true;
-  }
+  if (debounceTimer.elapsed_time() > 150ms) {
+    if (currentSw1 && !prevSw1) {
+      sw1Pressed = true;
+      debounceTimer.reset();
+    }
 
+    if (currentSw2 && !prevSw2) {
+      sw2Pressed = true;
+      debounceTimer.reset();
+    }
+  }
   prevSw1 = currentSw1;
   prevSw2 = currentSw2;
 }

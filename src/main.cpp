@@ -84,7 +84,7 @@ int main()
         break;
     }
 
-    ThisThread::sleep_for(1ms);
+    ThisThread::sleep_for(100ms);
   }
 
   /*while (true) {
@@ -119,23 +119,23 @@ int main()
   //ThisThread::sleep_for(100ms);
   //Kernel::Clock::now();
 
-  /* led_a.write(true);
-ThisThread::sleep_for(1000ms);
-led_a.write(false);
+  /*led_a.write(true);
+  ThisThread::sleep_for(1000ms);
+  led_a.write(false);
 */
   /*
-while (true){
-if(sw1.read()==false){
-led_a.write(true);
-ThisThread::sleep_for(10ms);
-}
+  while (true) {
+    if (sw1.read() == false) {
+      led_a.write(true);
+      ThisThread::sleep_for(10ms);
+    }
 
-else{
-  led_a.write(false);
-ThisThread::sleep_for(10ms);
-}
-} */
-
+    else {
+      led_a.write(false);
+      ThisThread::sleep_for(10ms);
+    }
+  }
+*/
   /*
 while (true) {
   //直進
