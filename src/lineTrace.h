@@ -1,0 +1,3 @@
+void lineTraceUpdate();
+
+void resetLineTrace();

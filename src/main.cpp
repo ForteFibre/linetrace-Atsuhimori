@@ -10,6 +10,7 @@
 //#include <cstdio>
 
 #include "button.h"
+#include "lineTrace.h"
 #include "motor.h"
 #include "sensor.h"
 #include "state.h"
@@ -61,9 +62,23 @@ int main()
         led_b = 1;
         led_c = 0;
 
-        motorRun();
+        /* for (int i = 0; i < 6; i++) {
+          printf("%.2f", readNormalized(i));
+        }
+        printf("\n");
+        ThisThread::sleep_for(100ms);
+        値を読む用
+        */
+
+        sensorUpdate();
+
+        lineTraceUpdate();
 
         if (isSw1Pressed()) {
+          motorStop();
+
+          resetLineTrace();
+
           robotState = STOP;
         }
 
