@@ -1,5 +1,5 @@
 #include "motor.h"
-
+//足回り
 #include <mbed.h>
 
 #include <Motor.hpp>

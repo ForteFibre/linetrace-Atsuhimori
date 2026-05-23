@@ -1,5 +1,5 @@
 #include "button.h"
-
+//初期待機
 #include <mbed.h>
 
 extern DigitalIn sw1;

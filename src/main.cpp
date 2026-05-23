@@ -1,4 +1,4 @@
-
+//mbedのThisThreadはたまにばぐる
 #include <mbed.h>
 
 #include <AnalogBus.hpp>

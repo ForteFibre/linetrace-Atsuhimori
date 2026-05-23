@@ -1,5 +1,5 @@
 #include "sensor.h"
-
+//センサーまとめ
 #include <mbed.h>
 
 #include <AnalogBus.hpp>
