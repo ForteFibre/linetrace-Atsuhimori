@@ -29,9 +29,9 @@
 // Line Trace (Direct PWM Mode)
 // ========================================
 
-#define BASE_PWM 0.40f
+#define BASE_PWM 0.50f
 
-#define PWM_KP 0.0006f
+#define PWM_KP 0.001f
 #define PWM_KI 0.0f
 #define PWM_KD 0.0f
 
