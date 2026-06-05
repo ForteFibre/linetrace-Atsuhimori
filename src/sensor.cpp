@@ -6,6 +6,8 @@
 
 #include <AnalogBus.hpp>
 
+#include "setting.h"
+
 extern AnalogBus sensor;
 
 // =========================
@@ -35,21 +37,19 @@ static Timer calibrationTimer;
 // 右 → 0 1 2 3 4 5 → 左
 // =========================
 
-static int weight[6] = {
-
-  2500, 1500, 500, -500, -1500, -2500};
-
-// =========================
-// ラインロスト閾値
-// =========================
-
-static const float LOST_THRESHOLD = 0.15f;
+static int weight[6] = {2500, 1500, 500, -500, -1500, -2500};
 
 // =========================
 // 最後ライン位置
 // =========================
 
 static float lastPosition = 0.0f;
+
+// =========================
+// ラインロスト回数
+// =========================
+
+static int lostCount = 0;
 
 // =========================
 // センサー更新
@@ -64,19 +64,16 @@ void sensorUpdate()
 
     int max = sensor_max[i];
 
-    // 0除算防止
     if (max == min) {
       normalized[i] = 0.0f;
     } else {
       normalized[i] = (float)(raw[i] - min) / (float)(max - min);
     }
 
-    // 下限制限
     if (normalized[i] < 0.0f) {
       normalized[i] = 0.0f;
     }
 
-    // 上限制限
     if (normalized[i] > 1.0f) {
       normalized[i] = 1.0f;
     }
@@ -116,8 +113,30 @@ float getLinePosition()
   // =========================
 
   if (denominator < LOST_THRESHOLD) {
-    return lastPosition;
+    lostCount++;
+
+    if (lostCount > 20) {
+      lostCount = 20;
+    }
+
+    float searchPosition = 2500.0f + (lostCount * 100.0f);
+
+    if (searchPosition > 4000.0f) {
+      searchPosition = 4000.0f;
+    }
+
+    if (lastPosition > 0) {
+      return searchPosition;
+    } else {
+      return -searchPosition;
+    }
   }
+
+  // =========================
+  // ライン発見
+  // =========================
+
+  lostCount = 0;
 
   // =========================
   // 通常位置計算
@@ -125,7 +144,6 @@ float getLinePosition()
 
   float position = numerator / denominator;
 
-  // 最後位置保存
   lastPosition = position;
 
   return position;
@@ -157,12 +175,10 @@ void calibrationUpdate()
   for (int i = 0; i < 6; i++) {
     int value = sensor.read_u16(i);
 
-    // 最大更新
     if (value > sensor_max[i]) {
       sensor_max[i] = value;
     }
 
-    // 最小更新
     if (value < sensor_min[i]) {
       sensor_min[i] = value;
     }

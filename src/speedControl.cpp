@@ -6,6 +6,7 @@
 #include <cstdio>
 
 #include "motor.h"
+#include "setting.h"
 
 extern Encoder encoder_0;
 extern Encoder encoder_1;
@@ -29,32 +30,6 @@ static float currentTargetRight = 0.0f;
 // =========================
 
 static const float DT = 0.005f;
-
-// =========================
-// 加速度制限
-// 1周期で増減する最大値
-// =========================
-
-static const float ACCEL_LIMIT = 0.30f;
-
-// =========================
-// フィードフォワード
-// =========================
-
-static const float FF_GAIN = 0.035f;
-
-// =========================
-// PIゲイン
-// =========================
-
-static const float KP_SPEED = 0.02f;
-static const float KI_SPEED = 0.010f;
-
-// =========================
-// 積分制限
-// =========================
-
-static const float INTEGRAL_LIMIT = 20.0f;
 
 // =========================
 
@@ -186,9 +161,7 @@ void speedControlUpdate()
 
   setMotor(leftPwm, rightPwm);
 
-  // =========================
-  // debug
-  // =========================
+#if DEBUG_SPEED_CONTROL
 
   if (debugTimer.elapsed_time() >= 100ms) {
     printf(
@@ -203,6 +176,8 @@ void speedControlUpdate()
 
     debugTimer.reset();
   }
+
+#endif
 }
 
 // =========================

@@ -9,9 +9,12 @@
 #include "lineTrace.h"
 #include "motor.h"
 #include "sensor.h"
+#include "setting.h"
 #include "speedControl.h"
+#include "speedMode.h"
 #include "speedTest.h"
 #include "state.h"
+
 Motor motor_0(PB_8, PB_9, false);
 Motor motor_1(PB_10, PB_2, false);
 
@@ -36,6 +39,22 @@ static const auto CONTROL_PERIOD = 5ms;
 
 int main()
 {
+  // =========================
+  // SPEED_CONTROL設定
+  // =========================
+
+  setBaseSpeed(BASE_SPEED);
+
+  setLineTracePID(SPEED_KP, SPEED_KI, SPEED_KD);
+
+  // =========================
+  // DIRECT_PWM設定
+  // =========================
+
+  setBasePwm(BASE_PWM);
+
+  setDirectPwmPID(PWM_KP, PWM_KI, PWM_KD);
+
   while (true) {
     buttonUpdate();
 
@@ -69,7 +88,9 @@ int main()
 
         lineTraceUpdate();
 
-        speedControlUpdate();
+        if (driveMode == SPEED_CONTROL) {
+          speedControlUpdate();
+        }
 
         if (isSw1Pressed()) {
           resetSpeedControl();
