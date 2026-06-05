@@ -99,7 +99,7 @@ void lineTraceUpdate()
   // ==========================================
 
   if (driveMode == SPEED_CONTROL) {
-    float turn = speedKp * error + speedKi * integral + speedKd * derivative;
+    float turn = -(speedKp * error + speedKi * integral + speedKd * derivative);
 
     float leftTarget = baseSpeed + turn;
 
@@ -129,7 +129,7 @@ void lineTraceUpdate()
   // ==========================================
 
   else {
-    float turn = pwmKp * error + pwmKi * integral + pwmKd * derivative;
+    float turn = -(pwmKp * error + pwmKi * integral + pwmKd * derivative);
 
     float leftPwm = basePwm + turn;
 
