@@ -82,7 +82,7 @@ int main()
 
         led_a = 0;
         led_b = 1;
-        led_c = 0;
+        //led_c = 0;
 
         sensorUpdate();
 

@@ -13,3 +13,7 @@ void calibrationStart();
 void calibrationUpdate();
 
 bool calibrationFinished();
+
+bool isLineLost();
+
+int getLastSensor();

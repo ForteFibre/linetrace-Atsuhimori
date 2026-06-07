@@ -37,7 +37,7 @@ static Timer calibrationTimer;
 // 右 → 0 1 2 3 4 5 → 左
 // =========================
 
-static int weight[6] = {2500, 1500, 500, -500, -1500, -2500};
+static int weight[6] = {1000, 600, 200, -200, -600, -1000};
 
 // =========================
 // 最後ライン位置
@@ -46,10 +46,22 @@ static int weight[6] = {2500, 1500, 500, -500, -1500, -2500};
 static float lastPosition = 0.0f;
 
 // =========================
-// ラインロスト回数
+// 最後に検知したセンサ
 // =========================
 
-static int lostCount = 0;
+static int lastSensor = 2;
+
+// =========================
+// ラインロスト
+// =========================
+
+static bool lineLost = false;
+
+// =========================
+// ロスト連続回数
+// =========================
+
+static int lostCounter = 0;
 
 // =========================
 // センサー更新
@@ -66,6 +78,7 @@ void sensorUpdate()
 
     if (max == min) {
       normalized[i] = 0.0f;
+
     } else {
       normalized[i] = (float)(raw[i] - min) / (float)(max - min);
     }
@@ -102,45 +115,44 @@ float getLinePosition()
 
   float denominator = 0.0f;
 
+  float maxValue = 0.0f;
+
+  int maxIndex = lastSensor;
+
   for (int i = 0; i < 6; i++) {
     numerator += normalized[i] * weight[i];
 
     denominator += normalized[i];
+
+    if (normalized[i] > maxValue) {
+      maxValue = normalized[i];
+
+      maxIndex = i;
+    }
   }
 
   // =========================
-  // ラインロスト判定
+  // ロスト判定
   // =========================
 
   if (denominator < LOST_THRESHOLD) {
-    lostCount++;
+    lostCounter++;
 
-    if (lostCount > 20) {
-      lostCount = 20;
-    }
+  } else {
+    lostCounter = 0;
+  }
 
-    float searchPosition = 2500.0f + (lostCount * 100.0f);
+  lineLost = (lostCounter >= LOST_COUNT_THRESHOLD);
 
-    if (searchPosition > 4000.0f) {
-      searchPosition = 4000.0f;
-    }
-
-    if (lastPosition > 0) {
-      return searchPosition;
-    } else {
-      return -searchPosition;
-    }
+  if (lineLost) {
+    return lastPosition;
   }
 
   // =========================
   // ライン発見
   // =========================
 
-  lostCount = 0;
-
-  // =========================
-  // 通常位置計算
-  // =========================
+  lastSensor = maxIndex;
 
   float position = numerator / denominator;
 
@@ -148,6 +160,14 @@ float getLinePosition()
 
   return position;
 }
+
+// =========================
+
+bool isLineLost() { return lineLost; }
+
+// =========================
+
+int getLastSensor() { return lastSensor; }
 
 // =========================
 // キャリブレーション開始
