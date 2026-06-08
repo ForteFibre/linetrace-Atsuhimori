@@ -16,6 +16,42 @@
 #define DEBUG_SENSOR 1
 
 // ========================================
+// Debug Function
+// ========================================
+
+#define DEBUG_CROSS 1
+#define DEBUG_LOST 1
+
+// ========================================
+// Tuning Mode
+// ========================================
+//
+// 1 = PID調整用
+//     交差点処理OFF
+//     ロスト探索OFF
+//
+// 0 = 本番用
+// ========================================
+
+#define TUNING_MODE 0
+
+// ========================================
+// Special Function
+// ========================================
+
+#if TUNING_MODE
+
+#define ENABLE_CROSS_STRAIGHT 0
+#define ENABLE_LINE_LOST_SEARCH 0
+
+#else
+
+#define ENABLE_CROSS_STRAIGHT 1
+#define ENABLE_LINE_LOST_SEARCH 1
+
+#endif
+
+// ========================================
 // Line Trace (Speed Control Mode)
 // ========================================
 
@@ -29,48 +65,20 @@
 // Line Trace (Direct PWM Mode)
 // ========================================
 
-#define BASE_PWM 0.70f
+#define BASE_PWM 0.75f
 
-#define PWM_KP 0.008f
-#define PWM_KI 0.000f
-#define PWM_KD 0.0004f
+#define PWM_KP 0.0015f
+#define PWM_KI 0.0000f
+#define PWM_KD 0.0000f
 
-/*  
-BASE_PWM,PWM_KP,PWM_KI,PWM_KD
+/*
+調整記録
 
-0,5   0.0015,0.0 0.000075 上
-0.7   0.008, 0.0, 0.0004 上
-0.8   0.020, 0.0, 0.00025 上
+BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+0.50      0.0015   0.0       0.000075
+0.70      0.0080   0.0       0.000400
+0.80      0.0200   0.0       0.000250
 */
 
 // ========================================
@@ -96,18 +104,71 @@ BASE_PWM,PWM_KP,PWM_KI,PWM_KD
 // Sensor
 // ========================================
 
-#define LOST_THRESHOLD 0.50f
+// 白線判定閾値
+//
+// lineValue = 1.0 - normalized
+//
+// lineValue > WHITE_DETECT_THRESHOLD
+// なら白線とみなす
+//
+
+#define WHITE_DETECT_THRESHOLD 0.50f
+
+// ========================================
+// Lost Detection
+// ========================================
+
+// denominator がこれ以下ならロスト候補
+
+#define LOST_THRESHOLD 0.30f
+
+// 連続何周期でロスト確定か
 
 #define LOST_COUNT_THRESHOLD 3
+
+// ========================================
+// Cross Detection
+// ========================================
+
+// 白線を何個以上読んだら
+// 交差点候補にするか
+
+#define CROSS_WHITE_COUNT 5
+
+// 何周期連続で交差点候補なら
+// 交差点確定にするか
+
+#define CROSS_COUNT_THRESHOLD 10
+
+// ========================================
+// Cross Straight
+// ========================================
+
+// 交差点検出後
+// この時間だけ直進
+
+#define CROSS_STRAIGHT_TIME_MS 150
 
 // ========================================
 // Lost Search
 // ========================================
 
-#define LOST_STAGE2_COUNT 30
+// 方向記憶式ロスト探索
+//
+// dir = +1 → 右回転
+// dir = -1 → 左回転
+//
 
 #define LOST_SEARCH_PWM_STAGE1 0.50f
 #define LOST_SEARCH_PWM_STAGE2 0.70f
 
 #define LOST_SEARCH_SPEED_STAGE1 10.0f
 #define LOST_SEARCH_SPEED_STAGE2 15.0f
+
+// ========================================
+// LED
+// ========================================
+
+// ロスト検知LED保持時間
+
+#define LOST_LED_TIME_MS 3000

@@ -59,6 +59,9 @@ static Timer debugTimer;
 static Timer lostLedTimer;
 static bool lostLedActive = false;
 
+static Timer crossTimer;
+static bool crossRunning = false;
+
 // =========================
 
 void setLineTracePID(float p, float i, float d)
@@ -101,11 +104,40 @@ void lineTraceUpdate()
 
   float error = getLinePosition();
 
-  int lastSensor = getLastSensor();
+#if ENABLE_CROSS_STRAIGHT
+
+  // =========================
+  // 交差点直進
+  // =========================
+
+  if (isCrossLine()) {
+    crossRunning = true;
+
+    crossTimer.reset();
+  }
+
+  if (crossRunning) {
+    if (crossTimer.elapsed_time() < std::chrono::milliseconds(CROSS_STRAIGHT_TIME_MS)) {
+      if (driveMode == SPEED_CONTROL) {
+        setTargetSpeed(baseSpeed, baseSpeed);
+
+      } else {
+        setMotor(basePwm, basePwm);
+      }
+
+      return;
+    }
+
+    crossRunning = false;
+  }
+
+#endif
 
   // =========================
   // ラインロスト探索
   // =========================
+
+#if ENABLE_LINE_LOST_SEARCH
 
   if (isLineLost()) {
     led_c = 1;
@@ -116,89 +148,38 @@ void lineTraceUpdate()
 
     integral = 0.0f;
 
-    lostCounter++;
+    int dir = getLostDirection();
 
-    bool stage2 = (lostCounter >= LOST_STAGE2_COUNT);
-
-    // ======================================
+    // =========================
     // SPEED CONTROL
-    // ======================================
+    // =========================
 
     if (driveMode == SPEED_CONTROL) {
-      if (!stage2) {
-        // ------------------
-        // Stage1
-        // ------------------
+      if (dir > 0) {
+        setTargetSpeed(LOST_SEARCH_SPEED_STAGE2, -LOST_SEARCH_SPEED_STAGE2);
 
-        if (lastSensor <= 2) {
-          // 右側でロスト
-
-          setTargetSpeed(LOST_SEARCH_SPEED_STAGE1, 0.0f);
-
-        } else {
-          // 左側でロスト
-
-          setTargetSpeed(0.0f, LOST_SEARCH_SPEED_STAGE1);
-        }
-      }
-
-      else {
-        // ------------------
-        // Stage2
-        // ------------------
-
-        if (lastSensor <= 2) {
-          setTargetSpeed(LOST_SEARCH_SPEED_STAGE2, -LOST_SEARCH_SPEED_STAGE2);
-
-        } else {
-          setTargetSpeed(-LOST_SEARCH_SPEED_STAGE2, LOST_SEARCH_SPEED_STAGE2);
-        }
+      } else {
+        setTargetSpeed(-LOST_SEARCH_SPEED_STAGE2, LOST_SEARCH_SPEED_STAGE2);
       }
     }
 
-    // ======================================
+    // =========================
     // DIRECT PWM
-    // ======================================
+    // =========================
 
     else {
-      if (!stage2) {
-        // ------------------
-        // Stage1
-        // ------------------
+      if (dir > 0) {
+        setMotor(LOST_SEARCH_PWM_STAGE2, -LOST_SEARCH_PWM_STAGE2);
 
-        if (lastSensor <= 2) {
-          setMotor(LOST_SEARCH_PWM_STAGE1, 0.0f);
-
-        } else {
-          setMotor(0.0f, LOST_SEARCH_PWM_STAGE1);
-        }
-      }
-
-      else {
-        // ------------------
-        // Stage2
-        // ------------------
-
-        if (lastSensor <= 2) {
-          setMotor(LOST_SEARCH_PWM_STAGE2, -LOST_SEARCH_PWM_STAGE2);
-
-        } else {
-          setMotor(-LOST_SEARCH_PWM_STAGE2, LOST_SEARCH_PWM_STAGE2);
-        }
+      } else {
+        setMotor(-LOST_SEARCH_PWM_STAGE2, LOST_SEARCH_PWM_STAGE2);
       }
     }
 
 #if DEBUG_LINE_TRACE
 
     if (debugTimer.elapsed_time() >= 100ms) {
-      printf(
-        "[LOST] "
-        "Pos:%7.1f "
-        "Sen:%d "
-        "Cnt:%3d "
-        "S:%d\n",
-
-        error, lastSensor, lostCounter, stage2 ? 2 : 1);
+      printf("[LOST] Dir:%d\n", dir);
 
       debugTimer.reset();
     }
@@ -207,6 +188,8 @@ void lineTraceUpdate()
 
     return;
   }
+
+#endif
 
   // =========================
   // ライン発見
@@ -275,7 +258,7 @@ void lineTraceUpdate()
   // ==========================================
 
   else {
-    float turn = -(pwmKp * error + pwmKi * integral + pwmKd * derivative);
+    float turn = (pwmKp * error + pwmKi * integral + pwmKd * derivative);
 
     float leftPwm = basePwm + turn;
 

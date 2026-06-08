@@ -14,6 +14,12 @@ void calibrationUpdate();
 
 bool calibrationFinished();
 
+// ライン状態
+
 bool isLineLost();
 
+bool isCrossLine();
+
 int getLastSensor();
+
+int getLostDirection();
