@@ -152,6 +152,19 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 #define CROSS_STRAIGHT_TIME_MS 100
 
 // ========================================
+// Lost Direction
+// ========================================
+
+// 0 = 直前5ms方式
+// 1 = 履歴方式
+
+#define LOST_DIRECTION_MODE 1
+
+// 履歴長
+
+#define LOST_DIRECTION_HISTORY 50
+
+// ========================================
 // Lost Search
 // ========================================
 

@@ -82,6 +82,11 @@ static int recoverCounter = 0;
 // sensorUpdate
 // =====================================
 
+static float rightHistory = 0.0f;
+static float leftHistory = 0.0f;
+
+static int historyCounter = 0;
+
 void sensorUpdate()
 {
   static bool initialized = false;
@@ -157,6 +162,26 @@ float getLinePosition()
       leftSide += lineValue;
     }
   }
+
+#if LOST_DIRECTION_MODE
+
+  if (!lineLost) {
+    rightHistory += rightSide;
+
+    leftHistory += leftSide;
+
+    historyCounter++;
+
+    if (historyCounter >= LOST_DIRECTION_HISTORY) {
+      rightHistory *= 0.5f;
+
+      leftHistory *= 0.5f;
+
+      historyCounter /= 2;
+    }
+  }
+
+#endif
 
   // =================================
   // 交差点判定
