@@ -77,6 +77,7 @@ static int lostCounter = 0;
 
 static int crossCounter = 0;
 
+static int recoverCounter = 0;
 // =====================================
 // sensorUpdate
 // =====================================
@@ -128,6 +129,9 @@ float getLinePosition()
 
   int whiteCount = 0;
 
+  float rightSide = 0.0f;
+  float leftSide = 0.0f;
+
   // =================================
   // 白線値生成
   // =================================
@@ -146,6 +150,11 @@ float getLinePosition()
 
     if (lineValue > WHITE_DETECT_THRESHOLD) {
       whiteCount++;
+    }
+    if (i <= 2) {
+      rightSide += lineValue;
+    } else {
+      leftSide += lineValue;
     }
   }
 
@@ -174,8 +183,14 @@ float getLinePosition()
 
   if (denominator < LOST_THRESHOLD) {
     lostCounter++;
+
+    recoverCounter = 0;
   } else {
-    lostCounter = 0;
+    recoverCounter++;
+
+    if (recoverCounter >= LOST_RECOVER_COUNT) {
+      lostCounter = 0;
+    }
   }
 
 #if ENABLE_LINE_LOST_SEARCH
@@ -191,15 +206,17 @@ float getLinePosition()
   // 最後に見た方向保存
   // =================================
 
-  if (maxIndex <= 2) {
-    lostDirection = 1;
-  } else {
-    lostDirection = -1;
+  if (!lineLost) {
+    if (rightSide > leftSide) {
+      lostDirection = 1;
+    } else {
+      lostDirection = -1;
+    }
   }
 
 #if DEBUG_SENSOR
 
-  if (debugTimer.elapsed_time() >= 100ms) {
+  if (debugTimer.elapsed_time() >= 1000ms) {
     printf(
       "[SNS] "
       "%.2f %.2f %.2f %.2f %.2f %.2f "

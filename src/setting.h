@@ -11,8 +11,8 @@
 // Debug
 // ========================================
 
-#define DEBUG_LINE_TRACE 1
-#define DEBUG_SPEED_CONTROL 1
+#define DEBUG_LINE_TRACE 0
+#define DEBUG_SPEED_CONTROL 0
 #define DEBUG_SENSOR 1
 
 // ========================================
@@ -67,9 +67,9 @@
 
 #define BASE_PWM 0.75f
 
-#define PWM_KP 0.0015f
+#define PWM_KP 0.002f
 #define PWM_KI 0.0000f
-#define PWM_KD 0.0000f
+#define PWM_KD 0.00005f
 
 /*
 調整記録
@@ -112,7 +112,7 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 // なら白線とみなす
 //
 
-#define WHITE_DETECT_THRESHOLD 0.50f
+#define WHITE_DETECT_THRESHOLD 0.85f
 
 // ========================================
 // Lost Detection
@@ -124,7 +124,9 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 
 // 連続何周期でロスト確定か
 
-#define LOST_COUNT_THRESHOLD 3
+#define LOST_COUNT_THRESHOLD 30
+
+#define LOST_RECOVER_COUNT 20
 
 // ========================================
 // Cross Detection
@@ -133,12 +135,12 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 // 白線を何個以上読んだら
 // 交差点候補にするか
 
-#define CROSS_WHITE_COUNT 5
+#define CROSS_WHITE_COUNT 6
 
 // 何周期連続で交差点候補なら
 // 交差点確定にするか
 
-#define CROSS_COUNT_THRESHOLD 10
+#define CROSS_COUNT_THRESHOLD 100
 
 // ========================================
 // Cross Straight
@@ -147,7 +149,7 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 // 交差点検出後
 // この時間だけ直進
 
-#define CROSS_STRAIGHT_TIME_MS 150
+#define CROSS_STRAIGHT_TIME_MS 100
 
 // ========================================
 // Lost Search

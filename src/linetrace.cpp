@@ -156,10 +156,10 @@ void lineTraceUpdate()
 
     if (driveMode == SPEED_CONTROL) {
       if (dir > 0) {
-        setTargetSpeed(LOST_SEARCH_SPEED_STAGE2, -LOST_SEARCH_SPEED_STAGE2);
+        setTargetSpeed(-LOST_SEARCH_SPEED_STAGE2, LOST_SEARCH_SPEED_STAGE2);
 
       } else {
-        setTargetSpeed(-LOST_SEARCH_SPEED_STAGE2, LOST_SEARCH_SPEED_STAGE2);
+        setTargetSpeed(LOST_SEARCH_SPEED_STAGE2, -LOST_SEARCH_SPEED_STAGE2);
       }
     }
 
@@ -196,7 +196,7 @@ void lineTraceUpdate()
   // =========================
 
   if (lostLedActive) {
-    if (lostLedTimer.elapsed_time() >= 3000ms) {
+    if (lostLedTimer.elapsed_time() >= 100ms) {
       led_c = 0;
 
       lostLedActive = false;
