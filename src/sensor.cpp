@@ -87,6 +87,8 @@ static float leftHistory = 0.0f;
 
 static int historyCounter = 0;
 
+static const float dirWeight[6] = {6.0f, 4.0f, 1.0f, 1.0f, 4.0f, 6.0f};
+
 void sensorUpdate()
 {
   static bool initialized = false;
@@ -157,9 +159,10 @@ float getLinePosition()
       whiteCount++;
     }
     if (i <= 2) {
-      rightSide += lineValue;
+      rightSide += lineValue * dirWeight[i];
+
     } else {
-      leftSide += lineValue;
+      leftSide += lineValue * dirWeight[i];
     }
   }
 
@@ -227,9 +230,22 @@ float getLinePosition()
   lineLost = false;
 
 #endif
+
   // =================================
   // 最後に見た方向保存
   // =================================
+
+#if LOST_DIRECTION_MODE
+
+  if (!lineLost) {
+    if (rightHistory > leftHistory) {
+      lostDirection = 1;
+    } else {
+      lostDirection = -1;
+    }
+  }
+
+#else
 
   if (!lineLost) {
     if (rightSide > leftSide) {
@@ -238,6 +254,8 @@ float getLinePosition()
       lostDirection = -1;
     }
   }
+
+#endif
 
 #if DEBUG_SENSOR
 
@@ -253,6 +271,8 @@ float getLinePosition()
       "Last:%d\n",
       normalized[0], normalized[1], normalized[2], normalized[3], normalized[4], normalized[5],
       denominator, whiteCount, crossLine, lineLost, lostDirection, lastSensor);
+
+    printf("R:%.1f L:%.1f RH:%.1f LH:%.1f\n", rightSide, leftSide, rightHistory, leftHistory);
 
 #if DEBUG_CROSS
 
@@ -307,6 +327,7 @@ float getLinePosition()
 
   return position;
 }
+
 // =====================================
 
 bool isLineLost() { return lineLost; }
