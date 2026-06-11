@@ -87,7 +87,12 @@ static float leftHistory = 0.0f;
 
 static int historyCounter = 0;
 
-static const float dirWeight[6] = {6.0f, 4.0f, 1.0f, 1.0f, 4.0f, 6.0f};
+static int lastEdgeDirection = 1;
+
+// 1 = 右端(sensor0)
+// -1 = 左端(sensor5)
+
+static const float dirWeight[6] = {30.0f, 4.0f, 1.0f, 1.0f, 4.0f, 30.0f};
 
 void sensorUpdate()
 {
@@ -155,6 +160,16 @@ float getLinePosition()
       maxIndex = i;
     }
 
+    // 端センサ記憶
+
+    if (i == 0 && lineValue > WHITE_DETECT_THRESHOLD) {
+      lastEdgeDirection = 1;
+    }
+
+    if (i == 5 && lineValue > WHITE_DETECT_THRESHOLD) {
+      lastEdgeDirection = -1;
+    }
+
     if (lineValue > WHITE_DETECT_THRESHOLD) {
       whiteCount++;
     }
@@ -176,11 +191,10 @@ float getLinePosition()
     historyCounter++;
 
     if (historyCounter >= LOST_DIRECTION_HISTORY) {
-      rightHistory *= 0.5f;
+      rightHistory = 0.0f;
+      leftHistory = 0.0f;
 
-      leftHistory *= 0.5f;
-
-      historyCounter /= 2;
+      historyCounter = 0;
     }
   }
 
@@ -235,7 +249,17 @@ float getLinePosition()
   // 最後に見た方向保存
   // =================================
 
-#if LOST_DIRECTION_MODE
+#if LOST_DIRECTION_MODE == 0
+
+  if (!lineLost) {
+    if (rightSide > leftSide) {
+      lostDirection = 1;
+    } else {
+      lostDirection = -1;
+    }
+  }
+
+#elif LOST_DIRECTION_MODE == 1
 
   if (!lineLost) {
     if (rightHistory > leftHistory) {
@@ -245,14 +269,10 @@ float getLinePosition()
     }
   }
 
-#else
+#elif LOST_DIRECTION_MODE == 2
 
   if (!lineLost) {
-    if (rightSide > leftSide) {
-      lostDirection = 1;
-    } else {
-      lostDirection = -1;
-    }
+    lostDirection = lastEdgeDirection;
   }
 
 #endif

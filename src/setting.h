@@ -65,11 +65,11 @@
 // Line Trace (Direct PWM Mode)
 // ========================================
 
-#define BASE_PWM 0.75f
+#define BASE_PWM 0.85f
 
-#define PWM_KP 0.0025f
+#define PWM_KP 0.002f
 #define PWM_KI 0.0000f
-#define PWM_KD 0.00003f
+#define PWM_KD 0.00005f
 
 /*
 調整記録
@@ -81,7 +81,9 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 0.80      0.0200   0.0       0.000250
 0.8       0.003　　0.0　　　　0.000001　確実
 0.8       0.003   0.0        0.00005　　安定
-0.75      0.0025  0.0        0.00003　　完璧
+0.75      0.0025  0.0        0.00003　　安定
+0.8       0.0025  0.0        0.00006　　安定
+0.85      0.002   0.0        0.00005　　完璧　これで行く
 
 */
 
@@ -128,9 +130,9 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 
 // 連続何周期でロスト確定か
 
-#define LOST_COUNT_THRESHOLD 20
+#define LOST_COUNT_THRESHOLD 15
 
-#define LOST_RECOVER_COUNT 15
+#define LOST_RECOVER_COUNT 8
 
 // ========================================
 // Cross Detection
@@ -144,7 +146,7 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 // 何周期連続で交差点候補なら
 // 交差点確定にするか
 
-#define CROSS_COUNT_THRESHOLD 20
+#define CROSS_COUNT_THRESHOLD 10
 
 // ========================================
 // Cross Straight
@@ -159,14 +161,16 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 // Lost Direction
 // ========================================
 
-// 0 = 直前5ms方式
+// 0 = 直前方式
 // 1 = 履歴方式
+// 2 = 端記憶方式
 
-#define LOST_DIRECTION_MODE 1
+#define LOST_DIRECTION_MODE 2
 
 // 履歴長
 
-#define LOST_DIRECTION_HISTORY 10
+#define LOST_DIRECTION_HISTORY 200
+//10から100に変更
 
 // ========================================
 // Lost Search
@@ -178,8 +182,8 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 // dir = -1 → 左回転
 //
 
-#define LOST_SEARCH_PWM_STAGE1 0.80f
-#define LOST_SEARCH_PWM_STAGE2 0.80f
+#define LOST_SEARCH_PWM_STAGE1 0.85f
+#define LOST_SEARCH_PWM_STAGE2 0.850f
 
 #define LOST_SEARCH_SPEED_STAGE1 40.0f
 #define LOST_SEARCH_SPEED_STAGE2 50.0f
