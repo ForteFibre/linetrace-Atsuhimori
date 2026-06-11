@@ -65,11 +65,11 @@
 // Line Trace (Direct PWM Mode)
 // ========================================
 
-#define BASE_PWM 0.85f
+#define BASE_PWM 0.95f
 
 #define PWM_KP 0.002f
 #define PWM_KI 0.0000f
-#define PWM_KD 0.00005f
+#define PWM_KD 0.00008f
 
 /*
 調整記録
@@ -83,7 +83,11 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 0.8       0.003   0.0        0.00005　　安定
 0.75      0.0025  0.0        0.00003　　安定
 0.8       0.0025  0.0        0.00006　　安定
-0.85      0.002   0.0        0.00005　　完璧　これで行く
+0.85      0.002   0.0        0.00005　　完璧　これで行く1
+0.9       0.002   0.0        0.00005　　完璧　これで行く2
+0.9       0.002   0.0        0.00004　　完璧　これで行く3
+0.95      0.002   0.0        0.00008　　完璧　これで行く4
+
 
 */
 
@@ -130,9 +134,9 @@ BASE_PWM  PWM_KP   PWM_KI    PWM_KD
 
 // 連続何周期でロスト確定か
 
-#define LOST_COUNT_THRESHOLD 15
+#define LOST_COUNT_THRESHOLD 3
 
-#define LOST_RECOVER_COUNT 8
+#define LOST_RECOVER_COUNT 3
 
 // ========================================
 // Cross Detection
